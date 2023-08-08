@@ -1,6 +1,12 @@
+// 作者：曉K(https://gitee.com/SmallK111407)
 import plugin from '../../lib/plugins/plugin.js';
-import fs from 'node:fs';
+import fs from 'node:fs'; // 后续可能会用到fs模块读取
 import { exec } from 'child_process'
+
+/*
+更新日志
+v1.0.0 该插件通过pnpm list命令获取版本号
+*/
 
 const _path = process.cwd()
 

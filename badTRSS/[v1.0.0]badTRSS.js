@@ -1,3 +1,4 @@
+// 作者：曉K(https://gitee.com/SmallK111407)
 import plugin from '../../lib/plugins/plugin.js';
 
 /*
