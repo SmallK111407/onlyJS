@@ -6,6 +6,8 @@ import { exec } from 'child_process'
 /*
 更新日志
 v1.0.0 该插件通过pnpm list命令获取版本号
+
+v1.0.1 修复优先级过高导致其他插件的版本无法查看的问题，并且将正则写的更加详细
 */
 
 const _path = process.cwd()
@@ -16,10 +18,10 @@ export class checkPackageVersion extends plugin {
             name: '[临时插件]查看依赖版本',
             dsc: '查看版本',
             event: 'message',
-            priority: -100000,
+            priority: 10000,
             rule: [
                 {
-                    reg: '^#*(.*)版本$',
+                    reg: '^#*(查看|查询)?(.*)版本$',
                     fnc: 'checkPackageVersion'
                 }
             ]
@@ -27,7 +29,7 @@ export class checkPackageVersion extends plugin {
     }
     async checkPackageVersion() {
         let msg = this.e.msg
-        let packageName = msg.replace(/#|版本/g, '').trim()
+        let packageName = msg.replace(/#|查看|查询|版本/g, '').trim()
         const cmd = `pnpm list ${packageName}`
         const options = {
             cwd: _path
