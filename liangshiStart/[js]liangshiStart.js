@@ -169,31 +169,31 @@ export class allSetting extends plugin {
             fs.copyFile(dataFile2, miaoFile2, (err) => {
                 if (err) throw err;
             })
-             /** 删除liangshiData */
-             const liangshiData = path.join(`${_path}/data`, `liangshiData`);
-             if (fs.existsSync(liangshiData) && fs.lstatSync(liangshiData).isDirectory()) {
-                 const files = fs.readdirSync(liangshiData);
-                 /** 因文件夹内存在文件，不能直接删除，需采用递归删除法 */
-                 files.forEach(file => {
-                     const currentPath = path.join(liangshiData, file);
-                     if (fs.lstatSync(currentPath).isDirectory()) {
-                         const subFiles = fs.readdirSync(currentPath);
-                         subFiles.forEach(subFile => {
-                             const subFilePath = path.join(currentPath, subFile);
-                             fs.unlinkSync(subFilePath);
-                         });
-                         fs.rmdirSync(currentPath);
-                     } else {
-                         fs.unlinkSync(currentPath);
-                     }
-                 });
-                 /** 删除liangshiData文件夹 */
-                 fs.rmdirSync(liangshiData);
-                 await this.e.reply(`梁氏要跟你说拜拜啦~`, true);
-                 return true
-             }
-         }
-         await this.e.reply(`你似乎还没有过任何备份呢？`, true)
-         return true
+            /** 删除liangshiData */
+            const liangshiData = path.join(`${_path}/data`, `liangshiData`);
+            if (fs.existsSync(liangshiData) && fs.lstatSync(liangshiData).isDirectory()) {
+                const files = fs.readdirSync(liangshiData);
+                /** 因文件夹内存在文件，不能直接删除，需采用递归删除法 */
+                files.forEach(file => {
+                    const currentPath = path.join(liangshiData, file);
+                    if (fs.lstatSync(currentPath).isDirectory()) {
+                        const subFiles = fs.readdirSync(currentPath);
+                        subFiles.forEach(subFile => {
+                            const subFilePath = path.join(currentPath, subFile);
+                            fs.unlinkSync(subFilePath);
+                        });
+                        fs.rmdirSync(currentPath);
+                    } else {
+                        fs.unlinkSync(currentPath);
+                    }
+                });
+                /** 删除liangshiData文件夹 */
+                fs.rmdirSync(liangshiData);
+                await this.e.reply(`梁氏要跟你说拜拜啦~`, true);
+                return true
+            }
+        }
+        await this.e.reply(`你似乎还没有过任何备份呢？`, true)
+        return true
     }
 }
