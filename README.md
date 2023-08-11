@@ -18,7 +18,7 @@
 
 注意：浏览源码可将链接中的**blob**改成**raw**直接获取源码
 
-比如：`../../../../../onlyJS/blob/main/checkPackageVersion/[v1.1.0]checkPackageVersion.js`
+比如：`https://gitee.com/SmallK111407/onlyJS/onlyJS/blob/main/checkPackageVersion/[v1.1.0]checkPackageVersion.js`
 
 我们可将其中onlyJS后门的**blob**改成**raw**即可直接展示源代码方便复制
 
