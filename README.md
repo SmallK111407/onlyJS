@@ -16,6 +16,12 @@
 
 手动在`机器人根目录/plugins/example`创建任意名称的`.js`文件，然后浏览插件源码，全选复制粘贴进刚刚创建的`.js`文件即可
 
+注意：浏览源码可将链接中的**blob**改成**raw**直接获取源码
+
+比如：`../../../../../onlyJS/blob/main/checkPackageVersion/[v1.1.0]checkPackageVersion.js`
+
+我们可将其中onlyJS后门的**blob**改成**raw**即可直接展示源代码方便复制
+
 ## 免责声明
 
 1. 功能仅限内部交流与小范围使用，请勿将本仓库用于以盈利为目的的场景
