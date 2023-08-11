@@ -38,22 +38,26 @@ export class allSetting extends plugin {
     async liangshiClone() {
         /** 不是主人则阻挡不再往下执行 */
         if (!this.e.isMaster) { return true }
-        /** 手动克隆梁氏 */
+        /** 定义路径变量 */
         const liangshi = path.join(`${_path}/plugins`, `liangshi-calc`)
+        /** 检查是否又梁氏插件 */
         if (!fs.existsSync(liangshi)) {
-            await this.e.reply(`正在尝试克隆梁氏插件！`)
+            await this.e.reply(`正在尝试克隆梁氏插件...`)
             const cmd = `git clone --depth=1 https://gitee.com/liangshi233/liangshi-calc.git ./plugins/liangshi-calc/`
             const options = {
                 cwd: _path
             };
+            /** 安装 */
             try {
+                /** 成功返回 */
                 execSync(cmd, options);
-                this.e.reply(`梁氏插件克隆成功！`)
+                this.e.reply(`梁氏插件克隆成功！\n发送【#梁氏启动】来启用梁氏插件吧！`)
                 return true
+                /** 如果clone失败 */
             } catch (error) {
                 console.error(`命令发生了错误`)
                 console.error(`错误内容: ${error.message}`)
-                this.e.reply(`命令发生了错误,可能是克隆失败`)
+                this.e.reply(`命令发生了错误,可能是克隆失败或是没有git或是内存不足等`)
                 return
             }
         } else {
@@ -77,25 +81,12 @@ export class allSetting extends plugin {
     async liangshiStart() {
         /** 不是主人则阻挡不再往下执行 */
         if (!this.e.isMaster) { return true }
-        /** 克隆梁氏 */
+        /** 检测梁氏 */
         const liangshi = path.join(`${_path}/plugins`, `liangshi-calc`)
-        if (!fs.existsSync(liangshi)) {
-            await this.e.reply(`正在尝试克隆梁氏插件！`)
-            const cmd = `git clone --depth=1 https://gitee.com/liangshi233/liangshi-calc.git ./plugins/liangshi-calc/`
-            const options = {
-                cwd: _path
-            };
-            try {
-                execSync(cmd, options);
-                this.e.reply(`梁氏插件克隆成功！`)
-                return true
-            } catch (error) {
-                console.error(`命令发生了错误`)
-                console.error(`错误内容: ${error.message}`)
-                this.e.reply(`命令发生了错误,可能是克隆失败`)
-                return
-            }
-        } else {
+        if(!fs.existsSync(liangshi)) {
+            await this.e.reply(`诶诶，好像还没安装梁氏插件呢！\n发送【#梁氏安装】获取梁氏插件吧！`)
+            return true
+        }
             /** 备份原文件，防止后悔 */
             const liangshiData = path.join(`${_path}/data`, `liangshiData`)
             if (!fs.existsSync(liangshiData)) {
@@ -156,7 +147,6 @@ export class allSetting extends plugin {
                 */
             }
         }
-    }
     async liangshiByebye() {
         /** 不是主人则阻挡不再往下执行 */
         if (!this.e.isMaster) { return true }
