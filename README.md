@@ -50,6 +50,44 @@ curl -o "./plugins/example/查看依赖版本.js" "https://gitee.com/SmallK11140
 
 </details>
 
+## 插件路径(使用安装方式1或3的时候可查看)
+
+_插件按照其名字首字母A-Z排列_
+
+<details><summary>展开/收起</summary>
+
+### 禁止时雨
+
+````
+badTRSS/badTRSS.js
+````
+
+### 小卖部
+
+````
+byd/byd.js
+````
+
+### 查看依赖版本
+
+````
+checkPackageVersion/checkPackageVersion.js
+````
+
+### 看看TA是男的女的
+
+````
+isBoyOrGirl/isBoyOrGirl.js
+````
+
+### 梁氏启动
+
+````
+liangshiStart/liangshiStart.js
+````
+
+</details>
+
 ## 免责声明
 
 1. 功能仅限内部交流与小范围使用，请勿将本仓库用于以盈利为目的的场景

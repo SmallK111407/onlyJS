@@ -24,7 +24,7 @@ const Loli = [114514, 1509293009]
 export class isBoyrOrGirl extends plugin {
     constructor() {
         super({
-            name: "[onlyJS]isBoyrOrGirl",
+            name: "[onlyJS]看看TA是男的还是女的",
             dsc: "看看TA是男的还是女的",
             event: "message",
             priority: 10,

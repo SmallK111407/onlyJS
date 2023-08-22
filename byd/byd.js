@@ -14,7 +14,7 @@ let CD = {}
 export class byd extends plugin {
     constructor() {
         super({
-            name: "[onlyJS]byd",
+            name: "[onlyJS]小卖部",
             dsc: "小卖部宇宙",
             event: "message",
             priority: 10,
