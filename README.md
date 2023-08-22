@@ -8,11 +8,35 @@
 
 ## 安装方式
 
-### 1.下载Zip压缩包
+<details><summary>展开/收起</summary>
+
+### 1.Curl安装
+
+<details><summary>展开/收起</summary>
+
+在**机器人根目录**输入以下
+````
+curl -o "./plugins/example/你想要键入的名字.js" "https://gitee.com/SmallK111407/onlyJS/raw/main/目录/插件名字.js"
+````
+例如：想要安装`查看依赖版本插件`
+````
+curl -o "./plugins/example/查看依赖版本.js" "https://gitee.com/SmallK111407/onlyJS/raw/main/checkPackageVersion/[v1.1.0]checkPackageVersion.js"
+````
+注意：gitee可更换成github
+
+</details>
+
+### 2.下载Zip压缩包
+
+<details><summary>展开/收起</summary>
 
 手动下载Zip压缩包，解压后将对应`.js`文件放入`机器人根目录/plugins/example`即可
 
-### 2.拷贝源码
+</details>
+
+### 3.拷贝源码
+
+<details><summary>展开/收起</summary>
 
 手动在`机器人根目录/plugins/example`创建任意名称的`.js`文件，然后浏览插件源码，全选复制粘贴进刚刚创建的`.js`文件即可
 
@@ -21,6 +45,10 @@
 比如：`https://gitee.com/SmallK111407/onlyJS/blob/main/checkPackageVersion/[v1.1.0]checkPackageVersion.js`
 
 我们可将其中onlyJS后门的**blob**改成**raw**即可直接展示源代码方便复制
+
+</details>
+
+</details>
 
 ## 免责声明
 
