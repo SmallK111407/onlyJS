@@ -44,7 +44,7 @@ curl -o "./plugins/example/查看依赖版本.js" "https://gitee.com/SmallK11140
 
 比如：`https://gitee.com/SmallK111407/onlyJS/blob/main/checkPackageVersion/[v1.1.0]checkPackageVersion.js`
 
-我们可将其中onlyJS后门的**blob**改成**raw**即可直接展示源代码方便复制
+我们可将其中onlyJS后面的**blob**改成**raw**即可直接展示源代码方便复制
 
 </details>
 
