@@ -12,6 +12,8 @@ v1.2 更新 修复如果前面为空，则不继续往下执行
 v1.3 更新 更多的性别！
 
 v1.3.5 新增 指定人输出萝莉
+
+v1.3.6 修改插件名字和正则
 */
 
 //沃尔玛购物袋名单
@@ -22,13 +24,13 @@ const Loli = [114514, 1509293009]
 export class isBoyrOrGirl extends plugin {
     constructor() {
         super({
-            name: "isBoyrOrGirl",
+            name: "[onlyJS]isBoyrOrGirl",
             dsc: "看看TA是男的还是女的",
             event: "message",
             priority: 10,
             rule: [
                 {
-                    reg: "^#*(.*)男的女的？?",
+                    reg: "^#?(.*)男的女的？?",
                     fnc: "isBoyrOrGirl"
                 }
             ]

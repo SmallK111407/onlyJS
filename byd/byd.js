@@ -6,13 +6,15 @@ import common from "../../lib/common/common.js";
 v1.0.0 这是一个单纯回复的插件,后续会更完善
 
 v1.0.1 新增饮料
+
+v1.0.2 修改插件名字
 */
 
 let CD = {}
 export class byd extends plugin {
     constructor() {
         super({
-            name: "byd",
+            name: "[onlyJS]byd",
             dsc: "小卖部宇宙",
             event: "message",
             priority: 10,

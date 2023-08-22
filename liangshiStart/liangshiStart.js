@@ -11,7 +11,7 @@ const _path = process.cwd()
 export class allSetting extends plugin {
     constructor() {
         super({
-            name: '[for js]启动梁氏',
+            name: '[onlyJs]启动梁氏',
             dsc: '玩原神玩的',
             event: 'message',
             priority: 10,
