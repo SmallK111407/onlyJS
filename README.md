@@ -20,7 +20,7 @@ curl -o "./plugins/example/你想要键入的名字.js" "https://gitee.com/Small
 ````
 例如：想要安装`查看依赖版本插件`
 ````
-curl -o "./plugins/example/查看依赖版本.js" "https://gitee.com/SmallK111407/onlyJS/raw/main/checkPackageVersion/[v1.1.0]checkPackageVersion.js"
+curl -o "./plugins/example/查看依赖版本.js" "https://gitee.com/SmallK111407/onlyJS/raw/main/checkPackageVersion/checkPackageVersion.js"
 ````
 注意：gitee可更换成github
 
@@ -42,7 +42,7 @@ curl -o "./plugins/example/查看依赖版本.js" "https://gitee.com/SmallK11140
 
 注意：浏览源码可将链接中的**blob**改成**raw**直接获取源码
 
-比如：`https://gitee.com/SmallK111407/onlyJS/blob/main/checkPackageVersion/[v1.1.0]checkPackageVersion.js`
+比如：`https://gitee.com/SmallK111407/onlyJS/blob/main/checkPackageVersion/checkPackageVersion.js`
 
 我们可将其中onlyJS后面的**blob**改成**raw**即可直接展示源代码方便复制
 
