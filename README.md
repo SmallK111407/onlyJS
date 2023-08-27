@@ -88,6 +88,12 @@ byd/byd.js
 checkPackageVersion/checkPackageVersion.js
 ```
 
+### 原神角色资料查询(没啥用处！)
+
+```
+genshin/genshin.js
+```
+
 ### 看看 TA 是男的女的
 
 ```

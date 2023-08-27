@@ -1,0 +1,9 @@
+更新日志
+v1.0.0 这是一个通过已跑路的依赖写的插件...(突然发现有genshin这个依赖就写了一下...)
+npmmirror: https://npmmirror.com/package/genshin
+
+由于作者2020.11就跑路了，可查看角色信息十分的少，没什么用处！
+
+使用前需要安装依赖
+pnpm add genshin -w
+否则无法使用...
