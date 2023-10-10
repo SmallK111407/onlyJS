@@ -14,6 +14,8 @@ v1.3 更新 更多的性别！
 v1.3.5 新增 指定人输出萝莉
 
 v1.3.6 修改插件名字和正则
+
+v1.3.7 修复TRSS-Yunzai
 */
 
 //沃尔玛购物袋名单
@@ -36,8 +38,8 @@ export class isBoyrOrGirl extends plugin {
             ]
         })
     }
-    async isBoyrOrGirl(e) {
-        if (!e.at) {
+    async isBoyrOrGirl() {
+        if (!this.e.at) {
             let msg = this.e.msg
             let result = msg.replace(/#|男的女的/g, '')
             if (result === "") {
@@ -97,7 +99,7 @@ export class isBoyrOrGirl extends plugin {
                 }
             }
         } else {
-            let member = await Bot.getGroupMemberInfo(e.group_id, e.at);
+            let member = await this.e.group.pickMember(this.e.at).getInfo()
             let name = member.card ? member.card : member.nickname ? member.nickname : member.user_id
             if (WalmartBag.includes(member.user_id)) {
                 this.e.reply(`【${name}】这么可爱`)
@@ -114,7 +116,7 @@ export class isBoyrOrGirl extends plugin {
                 this.e.reply(`萝莉！`)
                 return true
             } else {
-                if (e.at) {
+                if (this.e.at) {
                     this.e.reply(`【${name}】这么可爱`)
                     await common.sleep(2000)
                     this.e.reply(`TA的性别一定是...`)
