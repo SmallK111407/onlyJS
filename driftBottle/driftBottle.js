@@ -8,6 +8,8 @@ import path from 'path'
 v0.1.0 开发内测~
 
 v0.2.0 加入了违禁词以及其他配置
+
+v0.3.0 细节优化，致敬TRSS
 */
 
 /** 数据类配置 */
@@ -15,7 +17,9 @@ const throwCDTime = `1` //每几小时可以丢一次漂流瓶，默认1小时
 const getCDTime = `5` //每几分钟可以捞一次漂流瓶，默认5分钟
 const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能捞?默认3个
 /** 丢漂流瓶违禁词配置 */
-const blackContent = [`cnm`, `操你妈`, `rnm`] // 如果需要屏蔽任何网址请自行添加 /https?:\/\/[^\s]+/ 不需要带引号
+const isBlackContent = true //是否启用屏蔽词, true是 flase否 默认true
+const blackContent = [`cnm`, `操你妈`, `rnm`] //屏蔽词列表
+const isWebLink = true //是否屏蔽网址，需要启用屏蔽词作为前置否则不会屏蔽网址, true是 flase否 默认true
 /** 文本类配置 */
 const noImageContent = `不许把图片放进漂流瓶！` //如果有图片警告的文字，默认`不许把图片放进漂流瓶！`
 const noContentContent = `你还没有写入任何想丢的内容哦~` //如果没有附带内容提醒的文字，默认`你还没有写入任何想丢的内容哦~`
@@ -59,15 +63,21 @@ export class driftBottle extends plugin {
             fs.writeFileSync(jsonPath, JSON.stringify([]), 'utf8')
         }
         /** 内容模块 */
-        if(this.e.img) return this.e.reply(`${noImageContent}`)
+        if (this.e.img) return this.e.reply(`${noImageContent}`)
         const content = this.e.msg.replace(/#|扔|丢|漂流瓶/g, ``)
         if (!content) return this.e.reply(`${noContentContent}`)
         /** 违禁词判断模块 */
-        if (blackContent.includes(content)) return this.e.reply(`${blockContent}`)
+        if (isBlackContent) {
+            if (blackContent.includes(content)) return this.e.reply(`${blockContent}`)
+            if (isWebLink) {
+                let regTest = /((https?:\/\/)?[^\s]+\.[^\s]+)/
+                if (regTest.test(content)) return this.e.reply(`${blockContent}`)
+                return true
+            }
+        }
         /** 冷却模块 */
         if (throwCD[this.e.user_id] && !this.e.isMaster) {
             this.e.reply('每' + throwCDTime + '小时只能丢一次漂流瓶哦！')
-            return true
         }
         throwCD[this.e.user_id] = true
         throwCD[this.e.user_id] = setTimeout(() => {
