@@ -24,7 +24,7 @@ const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能�
 /** 丢漂流瓶违禁词配置 */
 const isBlackContent = true //是否启用屏蔽词, true是 flase否 默认true
 const blackContent = [`cnm`, `操你妈`, `rnm`] //屏蔽词列表
-const isWebLink = true //是否屏蔽网址, true是 flase否 默认true ！注意：需要启用屏蔽词作为前置否则不会屏蔽网址,并且开启此功能可能会误杀带内容"."的漂流瓶！
+const isWebLink = false //是否屏蔽网址, true是 flase否 默认false ！注意：需要启用屏蔽词作为前置否则不会屏蔽网址,并且开启此功能可能会误杀带内容"."的漂流瓶！
 /** 文本类配置 */
 const noImageContent = `不许把图片放进漂流瓶！` //如果有图片警告的文字，默认`不许把图片放进漂流瓶！`
 const noContentContent = `你还没有写入任何想丢的内容哦~` //如果没有附带内容提醒的文字，默认`你还没有写入任何想丢的内容哦~`
