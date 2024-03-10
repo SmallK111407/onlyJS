@@ -1,7 +1,7 @@
 // 作者：曉K(https://gitee.com/SmallK111407)
-import plugin from '../../lib/plugins/plugin.js';
-import common from "../../lib/common/common.js";
-import util from 'util';
+import plugin from '../../lib/plugins/plugin.js'
+import common from "../../lib/common/common.js"
+import util from 'util'
 import { exec } from 'child_process'
 
 /*

@@ -1,5 +1,5 @@
 // 作者：曉K(https://gitee.com/SmallK111407)
-import plugin from '../../lib/plugins/plugin.js';
+import plugin from '../../lib/plugins/plugin.js'
 
 /*
 更新日志

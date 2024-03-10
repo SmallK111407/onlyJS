@@ -1,8 +1,8 @@
 //项目作者: @梁氏(https://gitee.com/liangshi233)
 //项目地址: https://gitee.com/liangshi233/liangshi-calc
 //本插件作者: @曉K(https://gitee.com/SmallK111407)
-import plugin from '../../lib/plugins/plugin.js';
-import fs from 'node:fs';
+import plugin from '../../lib/plugins/plugin.js'
+import fs from 'node:fs'
 import path from 'path'
 import { execSync } from 'child_process'
 

@@ -1,6 +1,6 @@
 // 作者：曉K(https://gitee.com/SmallK111407)
-import plugin from "../../lib/plugins/plugin.js";
-import common from "../../lib/common/common.js";
+import plugin from "../../lib/plugins/plugin.js"
+import common from "../../lib/common/common.js"
 /*
 更新日志
 v1.0 更新 输出指定at人的性别
