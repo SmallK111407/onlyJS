@@ -2,6 +2,7 @@
 import plugin from '../../lib/plugins/plugin.js'
 import fs from 'node:fs'
 import path from 'path'
+import moment from 'moment'
 
 /*
 更新日志
@@ -10,6 +11,8 @@ v0.1.0 开发内测~
 v0.2.0 加入了违禁词以及其他配置
 
 v0.3.0 细节优化，致敬TRSS
+
+v0.3.1 时间转换模块改moment
 */
 
 /** 数据类配置 */
@@ -19,7 +22,7 @@ const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能�
 /** 丢漂流瓶违禁词配置 */
 const isBlackContent = true //是否启用屏蔽词, true是 flase否 默认true
 const blackContent = [`cnm`, `操你妈`, `rnm`] //屏蔽词列表
-const isWebLink = true //是否屏蔽网址，需要启用屏蔽词作为前置否则不会屏蔽网址, true是 flase否 默认true
+const isWebLink = true //是否屏蔽网址, true是 flase否 默认true ！注意：需要启用屏蔽词作为前置否则不会屏蔽网址,并且开启此功能可能会误杀带内容"."的漂流瓶！
 /** 文本类配置 */
 const noImageContent = `不许把图片放进漂流瓶！` //如果有图片警告的文字，默认`不许把图片放进漂流瓶！`
 const noContentContent = `你还没有写入任何想丢的内容哦~` //如果没有附带内容提醒的文字，默认`你还没有写入任何想丢的内容哦~`
@@ -84,19 +87,7 @@ export class driftBottle extends plugin {
             if (throwCD[this.e.user_id]) delete throwCD[this.e.user_id]
         }, throwCDTime * 60 * 60 * 1000)
         /** 时间处理模块 */
-        let today = new Date()
-        let year = today.getFullYear()
-        let month = today.getMonth() + 1
-        let day = today.getDate()
-        let hours = today.getHours()
-        let minutes = today.getMinutes()
-        let seconds = today.getSeconds()
-        if (month < 10) month = '0' + month
-        if (day < 10) day = '0' + day
-        if (hours < 10) hours = '0' + hours
-        if (minutes < 10) minutes = '0' + minutes
-        if (seconds < 10) seconds = '0' + seconds
-        let formattedDate = `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`
+        let formattedDate = moment().format('YYYY.MM.DD HH:mm:ss')
         /**  写入json模块 */
         let data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
         data.push({ content: content, date: formattedDate })
