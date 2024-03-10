@@ -15,7 +15,7 @@ const throwCDTime = `1` //每几小时可以丢一次漂流瓶，默认1小时
 const getCDTime = `5` //每几分钟可以捞一次漂流瓶，默认5分钟
 const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能捞?默认3个
 /** 丢漂流瓶违禁词配置 */
-const blackContent = [`cnm`, `操你妈`, `rnm`]
+const blackContent = [`cnm`, `操你妈`, `rnm`] // 如果需要屏蔽任何网址请自行添加 /https?:\/\/[^\s]+/ 不需要带引号
 /** 文本类配置 */
 const noImageContent = `不许把图片放进漂流瓶！` //如果有图片警告的文字，默认`不许把图片放进漂流瓶！`
 const noContentContent = `你还没有写入任何想丢的内容哦~` //如果没有附带内容提醒的文字，默认`你还没有写入任何想丢的内容哦~`
