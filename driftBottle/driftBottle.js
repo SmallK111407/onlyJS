@@ -13,6 +13,8 @@ v0.2.0 加入了违禁词以及其他配置
 v0.3.0 细节优化，致敬TRSS
 
 v0.3.1 时间转换模块改moment
+
+v0.4.0 加入了QQBot Button按钮
 */
 
 /** 数据类配置 */
@@ -29,7 +31,7 @@ const noContentContent = `你还没有写入任何想丢的内容哦~` //如果�
 const throwContent = `漂流瓶随诗歌流向远方了喔~` //丢漂流瓶附带的文字，默认`漂流瓶随诗歌流向远方了喔~`
 const blockContent = `你的漂流瓶违规了！修改一下再扔吧~` //丢漂流瓶如果触碰到违禁词提醒的文字，默认`你的漂流瓶违规了！修改一下再扔吧~`
 const getContent = `幸运的你从海边捡到了一个漂流瓶~` //捞漂流瓶附带的文字，默认`幸运的你从海边捡到了一个漂流瓶~`
-const lessDriftBottleContent = `海中的漂流瓶不够喔~怎么捞都捞不到~` //如果漂流瓶过少附带的文字，默认`海中的漂流瓶不够喔~怎么捞都捞不到~`
+const lessDriftBottleContent = `海中的漂流瓶不够喔(少于或等于${driftBottleNumber}个)~怎么捞都捞不到~` //如果漂流瓶过少附带的文字，默认`海中的漂流瓶不够喔(少于或等于${driftBottleNumber}个)~怎么捞都捞不到~`
 
 /** 下面这些不用管 */
 const throwCD = {}
@@ -66,21 +68,35 @@ export class driftBottle extends plugin {
             fs.writeFileSync(jsonPath, JSON.stringify([]), 'utf8')
         }
         /** 内容模块 */
-        if (this.e.img) return this.e.reply(`${noImageContent}`)
+        if (this.e.img) return this.e.reply([`${noImageContent}`, segment.button([
+            { text: "丢漂流瓶", input: `#丢漂流瓶` },
+            { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+        ])])
         const content = this.e.msg.replace(/#|扔|丢|漂流瓶/g, ``)
-        if (!content) return this.e.reply(`${noContentContent}`)
+        if (!content) return this.e.reply([`${noContentContent}`, segment.button([
+            { text: "丢漂流瓶", input: `#丢漂流瓶` },
+            { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+        ])])
         /** 违禁词判断模块 */
         if (isBlackContent) {
-            if (blackContent.includes(content)) return this.e.reply(`${blockContent}`)
+            if (blackContent.includes(content)) return this.e.reply([`${blockContent}`, segment.button([
+                { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+            ])])
             if (isWebLink) {
                 let regTest = /((https?:\/\/)?[^\s]+\.[^\s]+)/
-                if (regTest.test(content)) return this.e.reply(`${blockContent}`)
-                return true
+                if (regTest.test(content)) return this.e.reply([`${blockContent}`], segment.button([
+                    { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                    { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                ]))
             }
         }
         /** 冷却模块 */
         if (throwCD[this.e.user_id] && !this.e.isMaster) {
-            this.e.reply('每' + throwCDTime + '小时只能丢一次漂流瓶哦！')
+            this.e.reply(['每' + throwCDTime + '小时只能丢一次漂流瓶哦！', segment.button([
+                { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+            ])])
         }
         throwCD[this.e.user_id] = true
         throwCD[this.e.user_id] = setTimeout(() => {
@@ -92,13 +108,27 @@ export class driftBottle extends plugin {
         let data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
         data.push({ content: content, date: formattedDate })
         fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2), 'utf8')
-        await this.e.reply(`${throwContent}\n其中内容：${content}\n丢弃时间：${formattedDate}`)
+        await this.e.reply([`${throwContent}\n其中内容：${content}\n丢弃时间：${formattedDate}`, segment.button([
+            { text: "丢漂流瓶", input: `#丢漂流瓶` },
+            { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+        ])])
         return true
     }
     async getDriftBottle() {
+        const resPath = path.join(`${_path}/resources`, `driftBottle`)
+        const jsonPath = path.join(resPath, `driftBottle.json`)
+        if (!fs.existsSync(resPath)) {
+            fs.mkdirSync(resPath)
+        }
+        if (!fs.existsSync(jsonPath)) {
+            fs.writeFileSync(jsonPath, JSON.stringify([]), 'utf8')
+        }
         /** 冷却模块 */
         if (getCD[this.e.user_id] && !this.e.isMaster) {
-            this.e.reply('每' + getCDTime + '分钟只能捞一次漂流瓶哦！')
+            this.e.reply(['每' + getCDTime + '分钟只能捞一次漂流瓶哦！', segment.button([
+                { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+            ])])
             return true
         }
         getCD[this.e.user_id] = true
@@ -106,17 +136,20 @@ export class driftBottle extends plugin {
             if (getCD[this.e.user_id]) delete getCD[this.e.user_id]
         }, getCDTime * 60 * 1000)
         /** 检测模块 */
-        const resPath = path.join(`${_path}/resources`, `driftBottle`)
-        const jsonPath = path.join(resPath, `driftBottle.json`)
         let data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
         if (data.length <= `${driftBottleNumber}` || data.length === 0) {
-            await this.e.reply(`${lessDriftBottleContent}`)
+            await this.e.reply([`${lessDriftBottleContent}`, segment.button([
+                { text: "丢漂流瓶", input: `#丢漂流瓶` },
+            ])])
             return true
         }
         /** 随机模块 */
         let randomIndex = Math.floor(Math.random() * data.length)
         let selectedItem = data[randomIndex]
-        await this.e.reply(`${getContent}\n其中内容：${selectedItem.content}\n丢弃时间：${selectedItem.date}`)
+        await this.e.reply([`${getContent}\n其中内容：${selectedItem.content}\n丢弃时间：${selectedItem.date}`, segment.button([
+            { text: "丢漂流瓶", input: `#丢漂流瓶` },
+            { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+        ])])
         /** 删除模块 */
         data.splice(randomIndex, 1)
         fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2), 'utf8')
