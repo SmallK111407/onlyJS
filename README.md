@@ -88,6 +88,12 @@ byd/byd.js
 checkPackageVersion/checkPackageVersion.js
 ```
 
+### 漂流瓶
+
+```
+dirftBottle/dirftBottle.js
+```
+
 ### 原神角色资料查询(没啥用处！)
 
 ```
