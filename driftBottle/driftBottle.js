@@ -26,6 +26,7 @@ const backDriftBottleNumberContent = `个哦~` //查询漂流瓶数量的后置�
 
 /*
 更新日志
+v0.5.5 优化代码片段
 v0.5.4 QQBot Button按钮callback一律改input
 v0.5.3 细节优化，调整返回内容位置
 v0.5.2 细节优化
@@ -66,17 +67,20 @@ export class driftBottle extends plugin {
                 }
             ]
         })
+        this.resPath = path.join(`${_path}/resources`, `driftBottle`)
+        this.jsonPath = path.join(this.resPath, `driftBottle.json`)
+    }
+    /** 载入模块 */
+    async init() {
+        if (!fs.existsSync(this.resPath)) {
+            fs.mkdirSync(this.resPath)
+        }
+        if (!fs.existsSync(this.jsonPath)) {
+            fs.writeFileSync(this.jsonPath, JSON.stringify([]), 'utf8')
+        }
     }
     async throwDriftBottle() {
         /** 判断文件夹及文件模块 */
-        const resPath = path.join(`${_path}/resources`, `driftBottle`)
-        const jsonPath = path.join(resPath, `driftBottle.json`)
-        if (!fs.existsSync(resPath)) {
-            fs.mkdirSync(resPath)
-        }
-        if (!fs.existsSync(jsonPath)) {
-            fs.writeFileSync(jsonPath, JSON.stringify([]), 'utf8')
-        }
         /** 内容模块 */
         if (!isImageAllow) {
             if (this.e.img) return this.e.reply([`${noImageContent}`, segment.button([
@@ -117,13 +121,13 @@ export class driftBottle extends plugin {
         /** 时间处理模块 */
         let formattedDate = moment().format('YYYY.MM.DD HH:mm:ss')
         /** 写入json模块 */
-        let data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
+        let data = JSON.parse(fs.readFileSync(this.jsonPath, 'utf8'))
         if (this.e.img) {
             data.push({ content: content, date: formattedDate, imglink: this.e.img })
         } else {
             data.push({ content: content, date: formattedDate })
         }
-        fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2), 'utf8')
+        fs.writeFileSync(this.jsonPath, JSON.stringify(data, null, 2), 'utf8')
         if (content && !this.e.img) {
             await this.e.reply([`${throwContent}\n其中内容：${content}\n丢弃时间：${formattedDate}`, segment.button([
                 { text: "丢漂流瓶", input: `#丢漂流瓶` },
@@ -157,14 +161,6 @@ export class driftBottle extends plugin {
         return true
     }
     async getDriftBottle() {
-        const resPath = path.join(`${_path}/resources`, `driftBottle`)
-        const jsonPath = path.join(resPath, `driftBottle.json`)
-        if (!fs.existsSync(resPath)) {
-            fs.mkdirSync(resPath)
-        }
-        if (!fs.existsSync(jsonPath)) {
-            fs.writeFileSync(jsonPath, JSON.stringify([]), 'utf8')
-        }
         /** 冷却模块 */
         if (getCD[this.e.user_id] && !this.e.isMaster) {
             this.e.reply(['每' + getCDTime + '分钟只能捞一次漂流瓶哦！', segment.button([
@@ -178,7 +174,7 @@ export class driftBottle extends plugin {
             if (getCD[this.e.user_id]) delete getCD[this.e.user_id]
         }, getCDTime * 60 * 1000)
         /** 检测模块 */
-        let data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
+        let data = JSON.parse(fs.readFileSync(this.jsonPath, 'utf8'))
         if (data.length <= `${driftBottleNumber}` || data.length === 0) {
             await this.e.reply([`${lessDriftBottleContent}`, segment.button([
                 { text: "丢漂流瓶", input: `#丢漂流瓶` },
@@ -237,19 +233,11 @@ export class driftBottle extends plugin {
         }
         /** 删除模块 */
         data.splice(randomIndex, 1)
-        fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2), 'utf8')
+        fs.writeFileSync(this.jsonPath, JSON.stringify(data, null, 2), 'utf8')
         return true
     }
     async queryDriftBottleNumber() {
-        const resPath = path.join(`${_path}/resources`, `driftBottle`)
-        if (!resPath) return this.e.reply([`不存在漂流瓶数据，请先使用#丢漂流瓶`,
-            segment.button([
-                { text: "丢漂流瓶", input: `#丢漂流瓶` },
-                { text: "捞漂流瓶", input: `#捞漂流瓶` },
-            ])
-        ])
-        const jsonPath = path.join(resPath, `driftBottle.json`)
-        const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
+        const data = JSON.parse(fs.readFileSync(this.jsonPath, 'utf8'))
         const realDriftBottleNumber = data.length
         await this.e.reply([`${frontDriftBottleNumberContent}`, `${realDriftBottleNumber}`, `${backDriftBottleNumberContent}`,
         segment.button([
