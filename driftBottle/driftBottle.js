@@ -4,23 +4,6 @@ import fs from 'node:fs'
 import path from 'path'
 import moment from 'moment'
 
-/*
-更新日志
-v0.1.0 开发内测~
-
-v0.2.0 加入了违禁词以及其他配置
-
-v0.3.0 细节优化，致敬TRSS
-
-v0.3.1 时间转换模块改moment
-
-v0.4.0 加入了QQBot Button按钮
-
-v0.4.1 更合理的CD冷却时间
-
-v0.5.0 适配图片
-*/
-
 /** 数据类配置 */
 const throwCDTime = `3` //每几分钟可以丢一次漂流瓶，默认3分钟
 const getCDTime = `5` //每几分钟可以捞一次漂流瓶，默认5分钟
@@ -38,6 +21,21 @@ const throwContent = `漂流瓶随诗歌流向远方了喔~` //丢漂流瓶附�
 const blockContent = `你的漂流瓶违规了！修改一下再扔吧~` //丢漂流瓶如果触碰到违禁词提醒的文字，默认`你的漂流瓶违规了！修改一下再扔吧~`
 const getContent = `幸运的你从海边捡到了一个漂流瓶~` //捞漂流瓶附带的文字，默认`幸运的你从海边捡到了一个漂流瓶~`
 const lessDriftBottleContent = `海中的漂流瓶不够喔(少于或等于${driftBottleNumber}个)~怎么捞都捞不到~` //如果漂流瓶过少附带的文字，默认`海中的漂流瓶不够喔(少于或等于${driftBottleNumber}个)~怎么捞都捞不到~`
+const frontDriftBottleNumberContent = `海告诉我海里的漂流瓶有` //查询漂流瓶数量的前置文字，默认`海告诉我海里的漂流瓶有`
+const backDriftBottleNumberContent = `个哦~` //查询漂流瓶数量的后置文字，默认`个哦~`
+
+/*
+更新日志
+v0.1.0 开发内测~
+v0.2.0 加入了违禁词以及其他配置
+v0.3.0 细节优化，致敬TRSS
+v0.3.1 时间转换模块改moment
+v0.4.0 加入了QQBot Button按钮
+v0.4.1 更合理的CD冷却时间
+v0.5.0 适配图片
+v0.5.1 查询漂流瓶数量
+v0.5.2 细节优化
+*/
 
 /** 下面这些不用管 */
 const throwCD = {}
@@ -59,6 +57,10 @@ export class driftBottle extends plugin {
                 {
                     reg: '^#?(捡|捞)?漂流瓶$',
                     fnc: 'getDriftBottle'
+                },
+                {
+                    reg: '^#?(查询|获取)?漂流瓶(数|数量)$',
+                    fnc: 'queryDriftBottleNumber'
                 }
             ]
         })
@@ -178,6 +180,7 @@ export class driftBottle extends plugin {
         if (data.length <= `${driftBottleNumber}` || data.length === 0) {
             await this.e.reply([`${lessDriftBottleContent}`, segment.button([
                 { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                { text: "查询数量", callback: `#漂流瓶数量` },
             ])])
             return true
         }
@@ -235,6 +238,24 @@ export class driftBottle extends plugin {
         /** 删除模块 */
         data.splice(randomIndex, 1)
         fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2), 'utf8')
+        return true
+    }
+    async queryDriftBottleNumber() {
+        const resPath = path.join(`${_path}/resources`, `driftBottle`)
+        if (!resPath) return this.e.reply([`不存在漂流瓶数据，请先使用#丢漂流瓶`,
+            segment.button([
+                { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+            ])
+        ])
+        const jsonPath = path.join(resPath, `driftBottle.json`)
+        const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
+        const realDriftBottleNumber = data.length
+        await this.e.reply([`${frontDriftBottleNumberContent}`, `${realDriftBottleNumber}`, `${backDriftBottleNumberContent}`,
+        segment.button([
+            { text: "丢漂流瓶", input: `#丢漂流瓶` },
+            { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+        ])])
         return true
     }
 }
