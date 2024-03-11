@@ -20,7 +20,7 @@ v0.4.1 更合理的CD冷却时间
 */
 
 /** 数据类配置 */
-const throwCDTime = `5` //每几分钟可以丢一次漂流瓶，默认5分钟
+const throwCDTime = `3` //每几分钟可以丢一次漂流瓶，默认3分钟
 const getCDTime = `5` //每几分钟可以捞一次漂流瓶，默认5分钟
 const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能捞?默认3个
 /** 丢漂流瓶违禁词配置 */
