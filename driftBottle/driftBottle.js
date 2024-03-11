@@ -17,13 +17,17 @@ v0.3.1 时间转换模块改moment
 v0.4.0 加入了QQBot Button按钮
 
 v0.4.1 更合理的CD冷却时间
+
+v0.5.0 适配图片
 */
 
 /** 数据类配置 */
 const throwCDTime = `3` //每几分钟可以丢一次漂流瓶，默认3分钟
 const getCDTime = `5` //每几分钟可以捞一次漂流瓶，默认5分钟
 const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能捞?默认3个
-/** 丢漂流瓶违禁词配置 */
+/** 丢漂流瓶屏蔽类配置 */
+const isImageAllow = true //是否允许漂流瓶内容带图片, true是 flase否 默认true
+const isImageToLink = true //是否转图片为链接, true是 flase否 默认true
 const isBlackContent = true //是否启用屏蔽词, true是 flase否 默认true
 const blackContent = [`cnm`, `操你妈`, `rnm`] //屏蔽词列表
 const isWebLink = false //是否屏蔽网址, true是 flase否 默认false ！注意：需要启用屏蔽词作为前置否则不会屏蔽网址,并且开启此功能可能会误杀带内容"."的漂流瓶！
@@ -70,12 +74,14 @@ export class driftBottle extends plugin {
             fs.writeFileSync(jsonPath, JSON.stringify([]), 'utf8')
         }
         /** 内容模块 */
-        if (this.e.img) return this.e.reply([`${noImageContent}`, segment.button([
-            { text: "丢漂流瓶", input: `#丢漂流瓶` },
-            { text: "捞漂流瓶", callback: `#捞漂流瓶` },
-        ])])
+        if (!isImageAllow) {
+            if (this.e.img) return this.e.reply([`${noImageContent}`, segment.button([
+                { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+            ])])
+        }
         const content = this.e.msg.replace(/#|扔|丢|漂流瓶/g, ``)
-        if (!content) return this.e.reply([`${noContentContent}`, segment.button([
+        if (!content && !this.e.img) return this.e.reply([`${noContentContent}`, segment.button([
             { text: "丢漂流瓶", input: `#丢漂流瓶` },
             { text: "捞漂流瓶", callback: `#捞漂流瓶` },
         ])])
@@ -106,14 +112,44 @@ export class driftBottle extends plugin {
         }, throwCDTime * 60 * 1000)
         /** 时间处理模块 */
         let formattedDate = moment().format('YYYY.MM.DD HH:mm:ss')
-        /**  写入json模块 */
+        /** 写入json模块 */
         let data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
-        data.push({ content: content, date: formattedDate })
+        if (this.e.img) {
+            data.push({ content: content, date: formattedDate, imglink: this.e.img })
+        } else {
+            data.push({ content: content, date: formattedDate })
+        }
         fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2), 'utf8')
-        await this.e.reply([`${throwContent}\n其中内容：${content}\n丢弃时间：${formattedDate}`, segment.button([
-            { text: "丢漂流瓶", input: `#丢漂流瓶` },
-            { text: "捞漂流瓶", callback: `#捞漂流瓶` },
-        ])])
+        if (content && !this.e.img) {
+            await this.e.reply([`${throwContent}\n其中内容：${content}\n丢弃时间：${formattedDate}`, segment.button([
+                { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+            ])])
+        } else if (!content && this.e.img) {
+            if (isImageToLink) {
+                await this.e.reply([`${throwContent}\n附带图片：${this.e.img}\n丢弃时间：${formattedDate}`, segment.button([
+                    { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                    { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                ])])
+            } else {
+                await this.e.reply([`${throwContent}\n附带图片：`, segment.image(`${this.e.img}`), `\n丢弃时间：${formattedDate}`, segment.button([
+                    { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                    { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                ])])
+            }
+        } else if (content && this.e.img) {
+            if (isImageToLink) {
+                await this.e.reply([`${throwContent}\n其中内容：${content}\n附带图片：${this.e.img}\n丢弃时间：${formattedDate}`, segment.button([
+                    { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                    { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                ])])
+            } else {
+                await this.e.reply([`${throwContent}\n其中内容：${content}\n附带图片：`, segment.image(`${this.e.img}`), `${formattedDate}`, segment.button([
+                    { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                    { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                ])])
+            }
+        }
         return true
     }
     async getDriftBottle() {
@@ -148,10 +184,54 @@ export class driftBottle extends plugin {
         /** 随机模块 */
         let randomIndex = Math.floor(Math.random() * data.length)
         let selectedItem = data[randomIndex]
-        await this.e.reply([`${getContent}\n其中内容：${selectedItem.content}\n丢弃时间：${selectedItem.date}`, segment.button([
-            { text: "丢漂流瓶", input: `#丢漂流瓶` },
-            { text: "捞漂流瓶", callback: `#捞漂流瓶` },
-        ])])
+        /** 处理模块 */
+        if (selectedItem.imglink && selectedItem.content) {
+            if (isImageToLink) {
+                await this.e.reply([
+                    `${getContent}\n其中内容：${selectedItem.content}\n丢弃时间：${selectedItem.date}\n附带图片：${selectedItem.imglink}`,
+                    segment.button([
+                        { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                        { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                    ])
+                ])
+            } else {
+                await this.e.reply([
+                    `${getContent}\n其中内容：${selectedItem.content}\n丢弃时间：${selectedItem.date}\n附带图片：`,
+                    segment.image(`${selectedItem.imglink}`),
+                    segment.button([
+                        { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                        { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                    ])
+                ])
+            }
+        } else if (selectedItem.imglink) {
+            if (isImageToLink) {
+                await this.e.reply([
+                    `${getContent}\n丢弃时间：${selectedItem.date}\n附带图片：${selectedItem.imglink}`,
+                    segment.button([
+                        { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                        { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                    ])
+                ])
+            } else {
+                await this.e.reply([
+                    `${getContent}\n丢弃时间：${selectedItem.date}\n附带图片：`,
+                    segment.image(`${selectedItem.imglink}`),
+                    segment.button([
+                        { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                        { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                    ])
+                ])
+            }
+        } else {
+            await this.e.reply([
+                `${getContent}\n其中内容：${selectedItem.content}\n丢弃时间：${selectedItem.date}`,
+                segment.button([
+                    { text: "丢漂流瓶", input: `#丢漂流瓶` },
+                    { text: "捞漂流瓶", callback: `#捞漂流瓶` },
+                ])
+            ])
+        }
         /** 删除模块 */
         data.splice(randomIndex, 1)
         fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2), 'utf8')
