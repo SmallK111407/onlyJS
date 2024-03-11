@@ -35,6 +35,7 @@ v0.4.1 更合理的CD冷却时间
 v0.5.0 适配图片
 v0.5.1 查询漂流瓶数量
 v0.5.2 细节优化
+v0.5.3 细节优化
 */
 
 /** 下面这些不用管 */
@@ -191,7 +192,7 @@ export class driftBottle extends plugin {
         if (selectedItem.imglink && selectedItem.content) {
             if (isImageToLink) {
                 await this.e.reply([
-                    `${getContent}\n其中内容：${selectedItem.content}\n丢弃时间：${selectedItem.date}\n附带图片：${selectedItem.imglink}`,
+                    `${getContent}\n其中内容：${selectedItem.content}\n附带图片：${selectedItem.imglink}\n丢弃时间：${selectedItem.date}`,
                     segment.button([
                         { text: "丢漂流瓶", input: `#丢漂流瓶` },
                         { text: "捞漂流瓶", callback: `#捞漂流瓶` },
@@ -199,8 +200,7 @@ export class driftBottle extends plugin {
                 ])
             } else {
                 await this.e.reply([
-                    `${getContent}\n其中内容：${selectedItem.content}\n丢弃时间：${selectedItem.date}\n附带图片：`,
-                    segment.image(`${selectedItem.imglink}`),
+                    `${getContent}\n其中内容：${selectedItem.content}\n附带图片：`, segment.image(`${selectedItem.imglink}`), `\n丢弃时间：${selectedItem.date}`,
                     segment.button([
                         { text: "丢漂流瓶", input: `#丢漂流瓶` },
                         { text: "捞漂流瓶", callback: `#捞漂流瓶` },
@@ -210,7 +210,7 @@ export class driftBottle extends plugin {
         } else if (selectedItem.imglink) {
             if (isImageToLink) {
                 await this.e.reply([
-                    `${getContent}\n丢弃时间：${selectedItem.date}\n附带图片：${selectedItem.imglink}`,
+                    `${getContent}\n附带图片：${selectedItem.imglink}\n丢弃时间：${selectedItem.date}`,
                     segment.button([
                         { text: "丢漂流瓶", input: `#丢漂流瓶` },
                         { text: "捞漂流瓶", callback: `#捞漂流瓶` },
@@ -218,8 +218,7 @@ export class driftBottle extends plugin {
                 ])
             } else {
                 await this.e.reply([
-                    `${getContent}\n丢弃时间：${selectedItem.date}\n附带图片：`,
-                    segment.image(`${selectedItem.imglink}`),
+                    `${getContent}\n附带图片：`, segment.image(`${selectedItem.imglink}`), `\n丢弃时间：${selectedItem.date}`,
                     segment.button([
                         { text: "丢漂流瓶", input: `#丢漂流瓶` },
                         { text: "捞漂流瓶", callback: `#捞漂流瓶` },
