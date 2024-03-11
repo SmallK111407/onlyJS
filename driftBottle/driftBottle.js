@@ -15,10 +15,12 @@ v0.3.0 细节优化，致敬TRSS
 v0.3.1 时间转换模块改moment
 
 v0.4.0 加入了QQBot Button按钮
+
+v0.4.1 更合理的CD冷却时间
 */
 
 /** 数据类配置 */
-const throwCDTime = `1` //每几小时可以丢一次漂流瓶，默认1小时
+const throwCDTime = `5` //每几分钟可以丢一次漂流瓶，默认5分钟
 const getCDTime = `5` //每几分钟可以捞一次漂流瓶，默认5分钟
 const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能捞?默认3个
 /** 丢漂流瓶违禁词配置 */
@@ -93,7 +95,7 @@ export class driftBottle extends plugin {
         }
         /** 冷却模块 */
         if (throwCD[this.e.user_id] && !this.e.isMaster) {
-            this.e.reply(['每' + throwCDTime + '小时只能丢一次漂流瓶哦！', segment.button([
+            this.e.reply(['每' + throwCDTime + '分钟只能丢一次漂流瓶哦！', segment.button([
                 { text: "丢漂流瓶", input: `#丢漂流瓶` },
                 { text: "捞漂流瓶", callback: `#捞漂流瓶` },
             ])])
@@ -101,7 +103,7 @@ export class driftBottle extends plugin {
         throwCD[this.e.user_id] = true
         throwCD[this.e.user_id] = setTimeout(() => {
             if (throwCD[this.e.user_id]) delete throwCD[this.e.user_id]
-        }, throwCDTime * 60 * 60 * 1000)
+        }, throwCDTime * 60 * 1000)
         /** 时间处理模块 */
         let formattedDate = moment().format('YYYY.MM.DD HH:mm:ss')
         /**  写入json模块 */
