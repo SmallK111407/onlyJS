@@ -9,11 +9,11 @@ const throwCDTime = `3` //每几分钟可以丢一次漂流瓶，默认3分钟
 const getCDTime = `5` //每几分钟可以捞一次漂流瓶，默认5分钟
 const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能捞?默认3个
 /** 丢漂流瓶屏蔽类配置 */
-const isImageAllow = true //是否允许漂流瓶内容带图片, true是 flase否 默认true
-const isImageToLink = true //是否转图片为链接, true是 flase否 默认true
-const isBlackContent = true //是否启用屏蔽词, true是 flase否 默认true
+const isImageAllow = true //是否允许漂流瓶内容带图片, true是 false否 默认true
+const isImageToLink = true //是否转图片为链接, true是 false否 默认true
+const isBlackContent = true //是否启用屏蔽词, true是 false否 默认true
 const blackContent = [`cnm`, `操你妈`, `rnm`] //屏蔽词列表
-const isWebLink = false //是否屏蔽网址, true是 flase否 默认false ！注意：需要启用屏蔽词作为前置否则不会屏蔽网址,并且开启此功能可能会误杀带内容"."的漂流瓶！
+const isWebLink = false //是否屏蔽网址, true是 false否 默认false ！注意：需要启用屏蔽词作为前置否则不会屏蔽网址,并且开启此功能可能会误杀带内容"."的漂流瓶！
 /** 文本类配置 */
 const noImageContent = `不许把图片放进漂流瓶！` //如果有图片警告的文字，默认`不许把图片放进漂流瓶！`
 const noContentContent = `你还没有写入任何想丢的内容哦~` //如果没有附带内容提醒的文字，默认`你还没有写入任何想丢的内容哦~`
@@ -82,7 +82,6 @@ export class driftBottle extends plugin {
         }
     }
     async throwDriftBottle() {
-        /** 判断文件夹及文件模块 */
         /** 内容模块 */
         if (!isImageAllow) {
             if (this.e.img) return this.e.reply([`${noImageContent}`, Button()])
