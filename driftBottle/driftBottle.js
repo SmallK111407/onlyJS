@@ -5,6 +5,7 @@ import path from 'path'
 import moment from 'moment'
 
 /** 数据类配置 */
+const isGroupGetCD = false //是否以群为单位进行捞漂流瓶冷却,否则为个人为单位进行捞漂流瓶冷却 true是 false否 默认false
 const throwCDTime = `3` //每几分钟可以丢一次漂流瓶，默认3分钟
 const getCDTime = `5` //每几分钟可以捞一次漂流瓶，默认5分钟
 const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能捞?默认3个
@@ -26,6 +27,7 @@ const backDriftBottleNumberContent = `个哦~` //查询漂流瓶数量的后置�
 
 /*
 更新日志
+v0.6.0 新增`是否以群为单位进行捞漂流瓶冷却`的配置项
 v0.5.6 定义按钮代码片段为函数，减少代码的重复
 v0.5.5 优化代码片段
 v0.5.4 QQBot Button按钮callback一律改input
@@ -133,14 +135,25 @@ export class driftBottle extends plugin {
     }
     async getDriftBottle() {
         /** 冷却模块 */
-        if (getCD[this.e.user_id] && !this.e.isMaster) {
-            this.e.reply(['每' + getCDTime + '分钟只能捞一次漂流瓶哦！', Button()])
-            return true
+        if (!isGroupGetCD) {
+            if (getCD[this.e.user_id] && !this.e.isMaster) {
+                this.e.reply(['每' + getCDTime + '分钟只能捞一次漂流瓶哦！', Button()])
+                return true
+            }
+            getCD[this.e.user_id] = true
+            getCD[this.e.user_id] = setTimeout(() => {
+                if (getCD[this.e.user_id]) delete getCD[this.e.user_id]
+            }, getCDTime * 60 * 1000)
+        } else {
+            if (getCD[this.e.group_id] && !this.e.isMaster) {
+                this.e.reply(['本群每' + getCDTime + '分钟只能捞一次漂流瓶哦！', Button()])
+                return true
+            }
+            getCD[this.e.group_id] = true
+            getCD[this.e.group_id] = setTimeout(() => {
+                if (getCD[this.e.group_id]) delete getCD[this.e.group_id]
+            }, getCDTime * 60 * 1000)
         }
-        getCD[this.e.user_id] = true
-        getCD[this.e.user_id] = setTimeout(() => {
-            if (getCD[this.e.user_id]) delete getCD[this.e.user_id]
-        }, getCDTime * 60 * 1000)
         /** 检测模块 */
         let data = JSON.parse(fs.readFileSync(this.jsonPath, 'utf8'))
         if (data.length <= `${driftBottleNumber}` || data.length === 0) {
