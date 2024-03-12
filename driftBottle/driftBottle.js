@@ -27,6 +27,7 @@ const backDriftBottleNumberContent = `个哦~` //查询漂流瓶数量的后置�
 
 /*
 更新日志
+v0.6.2 修复了如果漂流瓶内容为[(丢|扔)漂流瓶]会被replace为空白的bug，修复屏蔽词
 v0.6.1 细节优化
 v0.6.0 新增`是否以群为单位进行捞漂流瓶冷却`的配置项
 v0.5.6 定义按钮代码片段为函数，减少代码的重复
@@ -89,11 +90,11 @@ export class driftBottle extends plugin {
         if (!isImageAllow) {
             if (this.e.img) return this.e.reply([`${noImageContent}`, Button()])
         }
-        const content = this.e.msg.replace(/#|扔|丢|漂流瓶/g, ``)
+        const content = this.e.msg.replace(/^(#扔漂流瓶|#丢漂流瓶)/g, ``)
         if (!content && !this.e.img) return this.e.reply([`${noContentContent}`, Button()])
         /** 违禁词判断模块 */
         if (isBlackContent) {
-            if (blackContent.includes(content)) return this.e.reply([`${blockContent}`, Button()])
+            if (blackContent.some(substring => content.includes(substring))) return this.e.reply([`${blockContent}`, Button()])
             if (isWebLink) {
                 let regTest = /((https?:\/\/)?[^\s]+\.[^\s]+)/
                 if (regTest.test(content)) return this.e.reply([`${blockContent}`, Button()])
