@@ -70,18 +70,6 @@ _插件按照其名字首字母 A-Z 排列_
 
 <details><summary>展开/收起</summary>
 
-### 禁止时雨
-
-```
-badTRSS/badTRSS.js
-```
-
-### 小卖部
-
-```
-byd/byd.js
-```
-
 ### 查看依赖版本
 
 ```
@@ -104,12 +92,6 @@ genshin/genshin.js
 
 ```
 isBoyOrGirl/isBoyOrGirl.js
-```
-
-### 梁氏启动
-
-```
-liangshiStart/liangshiStart.js
 ```
 
 </details>
