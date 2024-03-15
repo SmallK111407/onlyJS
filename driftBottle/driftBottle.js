@@ -27,6 +27,7 @@ const backDriftBottleNumberContent = `个哦~` //查询漂流瓶数量的后置�
 
 /*
 更新日志
+v1.0.1 修复部分特殊协议端无中生有换行符
 v1.0.0 首个正式版发布，修复了换行不能识别的bug
 ============================================================================================
 v0.6.2 修复了如果漂流瓶内容为[(丢|扔)漂流瓶]会被replace为空白的bug，修复屏蔽词
@@ -209,7 +210,7 @@ export class driftBottle extends plugin {
     async queryDriftBottleNumber() {
         const data = JSON.parse(fs.readFileSync(this.jsonPath, 'utf8'))
         const realDriftBottleNumber = data.length
-        await this.e.reply([`${frontDriftBottleNumberContent}`, `${realDriftBottleNumber}`, `${backDriftBottleNumberContent}`,
+        await this.e.reply([`${frontDriftBottleNumberContent}${realDriftBottleNumber}${backDriftBottleNumberContent}`,
         Button()])
         return true
     }
