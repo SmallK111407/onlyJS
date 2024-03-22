@@ -1,6 +1,7 @@
 // 作者：曉K(https://gitee.com/SmallK111407)
 import plugin from '../../lib/plugins/plugin.js'
-import fs from 'node:fs'
+import fs from 'fs/promises'
+import fs_ from 'node:fs'
 import path from 'path'
 import moment from 'moment'
 
@@ -12,8 +13,7 @@ const driftBottleNumber = `3` //json文件中少于等于几个漂流瓶不能�
 /** 丢漂流瓶屏蔽类配置 */
 const isImageAllow = true //是否允许漂流瓶内容带图片, true是 false否 默认true
 const isImageToLink = true //是否转图片为链接, true是 false否 默认true
-const isBlackContent = true //是否启用屏蔽词, true是 false否 默认true
-const blackContent = [`cnm`, `操你妈`, `rnm`] //屏蔽词列表
+const isBlackContent = true //是否启用屏蔽词, true是 false否 默认true 请使用`#?漂流瓶(添加|删除)屏蔽词` 添加或删除屏蔽词
 const isWebLink = false //是否屏蔽网址, true是 false否 默认false ！注意：需要启用屏蔽词作为前置否则不会屏蔽网址,并且开启此功能可能会误杀带内容"."的漂流瓶！
 /** 文本类配置 */
 const noImageContent = `不许把图片放进漂流瓶！` //如果有图片警告的文字，默认`不许把图片放进漂流瓶！`
@@ -27,6 +27,7 @@ const backDriftBottleNumberContent = `个哦~` //查询漂流瓶数量的后置�
 
 /*
 更新日志
+v1.1.0 细节优化，屏蔽词改为单独文件存储
 v1.0.1 修复部分特殊协议端无中生有换行符
 v1.0.0 首个正式版发布，修复了换行不能识别的bug
 ============================================================================================
@@ -72,38 +73,55 @@ export class driftBottle extends plugin {
                 {
                     reg: '^#?(查询|获取)?漂流瓶(数|数量)$',
                     fnc: 'queryDriftBottleNumber'
+                },
+                {
+                    reg: '^#?漂流瓶(添加|删除)屏蔽词',
+                    fnc: 'addOrDelBlackWord'
                 }
+                /* QQBot无法接收this.e.at,暂时废弃
+                {
+                    reg: '^#?漂流瓶(封禁|解禁)',
+                    fnc: 'banOrUnbanSomeBody'
+                }
+                */
             ]
         })
         this.resPath = path.join(`${_path}/resources`, `driftBottle`)
         this.jsonPath = path.join(this.resPath, `driftBottle.json`)
+        this.blackWordsPath = path.join(this.resPath, `blackWords.json`)
+        // this.bannedUsersPath = path.join(this.resPath, `bannedUsers.json`)
     }
 
-    /** 载入模块 */
     async init() {
-        if (!fs.existsSync(this.resPath)) {
-            fs.mkdirSync(this.resPath)
+        if (!fs_.existsSync(this.resPath)) {
+            await fs.mkdir(this.resPath)
         }
-        if (!fs.existsSync(this.jsonPath)) {
-            fs.writeFileSync(this.jsonPath, JSON.stringify([]), 'utf8')
+        if (!fs_.existsSync(this.jsonPath)) {
+            await fs.writeFile(this.jsonPath, JSON.stringify([]), 'utf8')
         }
+        if (!fs_.existsSync(this.blackWordsPath)) {
+            await fs.writeFile(this.blackWordsPath, JSON.stringify([]), 'utf8')
+        }
+        /*
+        if (!fs_.existsSync(this.bannedUsersPath)) {
+            await fs.writeFile(this.bannedUsersPath, JSON.stringify([]), 'utf8')
+        }
+        */
     }
     async throwDriftBottle() {
-        /** 内容模块 */
         if (!isImageAllow) {
             if (this.e.img) return this.e.reply([`${noImageContent}`, Button()])
         }
         const content = this.e.msg.replace(/^(#扔漂流瓶|#丢漂流瓶)/g, ``)
         if (!content && !this.e.img) return this.e.reply([`${noContentContent}`, Button()])
-        /** 违禁词判断模块 */
         if (isBlackContent) {
-            if (blackContent.some(substring => content.includes(substring))) return this.e.reply([`${blockContent}`, Button()])
+            const blackWords = JSON.parse(await fs.readFile(`${_path}/resources/driftBottle/blackWords.json`, `utf-8`))
+            if (blackWords.some(substring => content.includes(substring))) return this.e.reply([`${blockContent}`, Button()])
             if (isWebLink) {
                 let regTest = /((https?:\/\/)?[^\s]+\.[^\s]+)/
                 if (regTest.test(content)) return this.e.reply([`${blockContent}`, Button()])
             }
         }
-        /** 冷却模块 */
         if (throwCD[this.e.user_id] && !this.e.isMaster) {
             this.e.reply(['每' + throwCDTime + '分钟只能丢一次漂流瓶哦！', Button()])
         }
@@ -111,16 +129,14 @@ export class driftBottle extends plugin {
         throwCD[this.e.user_id] = setTimeout(() => {
             if (throwCD[this.e.user_id]) delete throwCD[this.e.user_id]
         }, throwCDTime * 60 * 1000)
-        /** 时间处理模块 */
         let formattedDate = moment().format('YYYY.MM.DD HH:mm:ss')
-        /** 写入json模块 */
-        let data = JSON.parse(fs.readFileSync(this.jsonPath, 'utf8'))
+        let data = JSON.parse(await fs.readFile(this.jsonPath, 'utf8'))
         if (this.e.img) {
             data.push({ content: content, date: formattedDate, imglink: this.e.img })
         } else {
             data.push({ content: content, date: formattedDate })
         }
-        fs.writeFileSync(this.jsonPath, JSON.stringify(data, null, 2), 'utf8')
+        await fs.writeFile(this.jsonPath, JSON.stringify(data, null, 2), 'utf8')
         if (content && !this.e.img) {
             await this.e.reply([`${throwContent}\n其中内容：${content}\n丢弃时间：${formattedDate}`, Button()])
         } else if (!content && this.e.img) {
@@ -139,7 +155,6 @@ export class driftBottle extends plugin {
         return true
     }
     async getDriftBottle() {
-        /** 冷却模块 */
         if (!isGroupGetCD) {
             if (getCD[this.e.user_id] && !this.e.isMaster) {
                 this.e.reply(['每' + getCDTime + '分钟只能捞一次漂流瓶哦！', Button()])
@@ -159,8 +174,7 @@ export class driftBottle extends plugin {
                 if (getCD[this.e.group_id]) delete getCD[this.e.group_id]
             }, getCDTime * 60 * 1000)
         }
-        /** 检测模块 */
-        let data = JSON.parse(fs.readFileSync(this.jsonPath, 'utf8'))
+        let data = JSON.parse(await fs.readFile(this.jsonPath, 'utf8'))
         if (data.length <= `${driftBottleNumber}` || data.length === 0) {
             await this.e.reply([`${lessDriftBottleContent}`, segment.button([
                 { text: "丢漂流瓶", input: `#丢漂流瓶` },
@@ -168,10 +182,8 @@ export class driftBottle extends plugin {
             ])])
             return true
         }
-        /** 随机模块 */
         let randomIndex = Math.floor(Math.random() * data.length)
         let selectedItem = data[randomIndex]
-        /** 处理模块 */
         if (selectedItem.imglink && selectedItem.content) {
             if (isImageToLink) {
                 await this.e.reply([
@@ -202,22 +214,72 @@ export class driftBottle extends plugin {
                 Button()
             ])
         }
-        /** 删除模块 */
         data.splice(randomIndex, 1)
-        fs.writeFileSync(this.jsonPath, JSON.stringify(data, null, 2), 'utf8')
+        await fs.writeFile(this.jsonPath, JSON.stringify(data, null, 2), 'utf8')
         return true
     }
     async queryDriftBottleNumber() {
-        const data = JSON.parse(fs.readFileSync(this.jsonPath, 'utf8'))
+        const data = JSON.parse(await fs.readFile(this.jsonPath, 'utf8'))
         const realDriftBottleNumber = data.length
         await this.e.reply([`${frontDriftBottleNumberContent}${realDriftBottleNumber}${backDriftBottleNumberContent}`,
         Button()])
         return true
     }
+    async addOrDelBlackWord() {
+        if (!this.e.isMaster) return false
+        const blackWords = JSON.parse(await fs.readFile(this.blackWordsPath, 'utf8'))
+        let result = false
+        this.e.msg.replace(/^#?漂流瓶(添加|删除)屏蔽词(.*)$/, async (_, operation, wordsStr) => {
+            const words = wordsStr.trim().split(/,|，|\|/).filter(word => word.trim() !== '')
+            if (words.length === 0 || words.includes('')) {
+                await this.e.reply('你还没有写入屏蔽词哦~', BlackButton())
+                return true
+            }
+            if (operation === '添加') {
+                this.addOrDel = true
+                for (const word of words) {
+                    if (!blackWords.includes(word)) {
+                        blackWords.push(word)
+                        result = true 
+                    } else {
+                        await this.e.reply([`部分或单个屏蔽词在列表中已存在！`, BlackButton()])
+                        break
+                    }
+                }
+            } else if (operation === '删除') {
+                this.addOrDel = false
+                for (const word of words) {
+                    const index = blackWords.indexOf(word)
+                    if (index > -1) {
+                        blackWords.splice(index, 1)
+                        result = true
+                    } else {
+                        await this.e.reply([`部分或单个屏蔽词在列表中不存在！`, BlackButton()])
+                        break
+                    }
+                }
+            }
+        })
+        await fs.writeFile(this.blackWordsPath, JSON.stringify(blackWords, null, 2), 'utf8')
+        if (result) return await this.e.reply([`屏蔽词`, this.addOrDel ? `添加` : `删除`, `成功！`, BlackButton()])
+        return true
+    }
+    /*
+    async banOrUnbanSomeBody() {
+        if (!this.e.isMaster) return false
+        const bannedUsers = JSON.parse(await fs.readFile(this.bannedUsersPath, 'utf8'))
+    }
+    */
 }
 function Button() {
     return segment.button([
         { text: "丢漂流瓶", input: `#丢漂流瓶` },
         { text: "捞漂流瓶", input: `#捞漂流瓶` },
+    ])
+}
+function BlackButton() {
+    return segment.button([
+        { text: "添加屏蔽词", input: `#漂流瓶添加屏蔽词` },
+        { text: "删除屏蔽词", input: `#漂流瓶删除屏蔽词` },
     ])
 }
